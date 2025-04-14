@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warning!</title>
+  <style>
+    /* Основные стили страницы */
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+      color: red;
+      font-family: 'Courier New', monospace;
+      position: relative;
+    }
+    .container {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: transform 0.1s ease-out;
+    }
+    /* Глючащий заголовок */
+    .glitch {
+      font-size: 3em;
+      position: relative;
+      z-index: 10;
+      animation: glitch 0.2s infinite;
+    }
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      color: inherit;
+      overflow: hidden;
+    }
+    .glitch::before {
+      left: 2px;
+      text-shadow: -2px 0 cyan;
+      clip: rect(0, 900px, 0, 0);
+      animation: glitch-before 2s infinite linear alternate-reverse;
+    }
+    .glitch::after {
+      left: -2px;
+      text-shadow: -2px 0 magenta;
+      clip: rect(0, 900px, 0, 0);
+      animation: glitch-after 2.5s infinite linear alternate-reverse;
+    }
+    @keyframes glitch-before {
+      0%, 20%, 40%, 60%, 80%, 100% { clip: rect(0, 900px, 0, 0); }
+      10% { clip: rect(10px, 900px, 50px, 0); }
+      30% { clip: rect(20px, 900px, 60px, 0); }
+      50% { clip: rect(5px, 900px, 40px, 0); }
+      70% { clip: rect(15px, 900px, 70px, 0); }
+      90% { clip: rect(0, 900px, 30px, 0); }
+    }
+    @keyframes glitch-after {
+      0%, 20%, 40%, 60%, 80%, 100% { clip: rect(0, 900px, 0, 0); }
+      15% { clip: rect(5px, 900px, 45px, 0); }
+      35% { clip: rect(25px, 900px, 75px, 0); }
+      55% { clip: rect(10px, 900px, 40px, 0); }
+      75% { clip: rect(20px, 900px, 65px, 0); }
+      95% { clip: rect(0, 900px, 35px, 0); }
+    }
+    @keyframes glitch { 
+      0% { transform: none; }
+      20% { transform: skew(-0.5deg, -0.5deg); }
+      40% { transform: skew(0.5deg, 0.5deg); }
+      60% { transform: skew(-0.5deg, 0.5deg); }
+      80% { transform: skew(0.5deg, -0.5deg); }
+      100% { transform: none; }
+    }
+    /* Стили для кнопки */
+    button {
+      margin-top: 20px;
+      padding: 15px 30px;
+      font-size: 1.5em;
+      background: #222;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 10;
+    }
+    button:hover {
+      background: #444;
+    }
+    /* Элементы обратного отсчёта и предупреждения */
+    #countdown,
+    #warningMessage {
+      font-size: 2em;
+      margin-top: 20px;
+      text-align: center;
+      background: black;
+      padding: 10px;
+      z-index: 10;
+      display: none;
+    }
+    /* Шум и динамический фон */
+    .noise {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      background: black;
+      animation: staticNoise 0.1s infinite, colorShift 1s infinite;
+    }
+    @keyframes staticNoise {
+      0% { background: radial-gradient(circle, #fff 1%, #000 1%) 0% 0% / 5px 5px; }
+      25% { background: radial-gradient(circle, #fff 1%, #000 1%) 25% 25% / 8px 8px; }
+      50% { background: radial-gradient(circle, #fff 1%, #000 1%) 50% 50% / 10px 10px; }
+      75% { background: radial-gradient(circle, #fff 1%, #000 1%) 75% 75% / 12px 12px; }
+      100% { background: radial-gradient(circle, #fff 1%, #000 1%) 100% 100% / 5px 5px; }
+    }
+    @keyframes colorShift {
+      0% { filter: hue-rotate(0deg); }
+      50% { filter: hue-rotate(180deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    /* Эффект помех – мерцающие линии */
+    .interference {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 8;
+      background: linear-gradient(0deg, transparent 70%, rgba(255, 0, 0, 0.2) 70%);
+      animation: interference 0.2s infinite;
+    }
+    @keyframes interference {
+      0% { transform: translateX(0); }
+      50% { transform: translateX(20px); }
+      100% { transform: translateX(0); }
+    }
+    /* Дополнительный глюк-оверлей */
+    .glitch-overlay {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5em;
+      z-index: 10;
+      color: yellow;
+      animation: flicker 0.5s infinite alternate;
+    }
+    @keyframes flicker {
+      0% { opacity: 0.8; }
+      50% { opacity: 0.2; }
+      100% { opacity: 0.8; }
+    }
+    /* Эффект красной вспышки */
+    .flash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: red;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9;
+      animation: flashEffect 3s infinite;
+    }
+    @keyframes flashEffect {
+      0% { opacity: 0; }
+      10% { opacity: 0.2; }
+      20% { opacity: 0; }
+      30% { opacity: 0.3; }
+      40% { opacity: 0; }
+      50% { opacity: 0.2; }
+      60% { opacity: 0; }
+      70% { opacity: 0.3; }
+      80% { opacity: 0; }
+      90% { opacity: 0.2; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Красная вспышка -->
+  <div class="flash"></div>
+  <!-- Шум и линии помех -->
+  <div class="noise"></div>
+  <div class="interference"></div>
+  <div class="container">
+    <h1 class="glitch" data-text="Ваши персональные данные будут слиты через 30 секунд!">
+      Ваши персональные данные будут слиты через 30 секунд!
+    </h1>
+    <button id="cancelButton">Отмена</button>
+    <div id="countdown">Осталось: 30 секунд</div>
+    <div id="warningMessage">Выключение сайта не поможет :)</div>
+    <div class="glitch-overlay">Внимание! Ваше устройство не защищено!</div>
+  </div>
+  <!-- Audio элемент для звука вируса (замените src, если нужно) -->
+  <audio id="virusSound" loop preload="auto" style="display:none;" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+  <script>
+    const cancelButton = document.getElementById('cancelButton');
+    const countdownElement = document.getElementById('countdown');
+    const warningMessage = document.getElementById('warningMessage');
+    const virusSound = document.getElementById('virusSound');
+    const container = document.querySelector('.container');
+    let countdownTimer;
+
+    cancelButton.addEventListener('click', () => {
+      // Запускаем звук вируса
+      virusSound.play().catch((e) => console.error("Ошибка воспроизведения звука:", e));
+
+      cancelButton.style.display = 'none';
+      countdownElement.style.display = 'block';
+      warningMessage.style.display = 'block';
+
+      let timeLeft = 30;
+      countdownElement.textContent = `Осталось: ${timeLeft} секунд`;
+
+      countdownTimer = setInterval(() => {
+        timeLeft--;
+        // Усиливаем эффект нестабильности при приближении конца
+        if (timeLeft < 10) {
+          container.style.filter = `contrast(${1 + (10 - timeLeft) * 0.1}) brightness(${1 - (10 - timeLeft) * 0.05})`;
+        }
+        if (timeLeft > 0) {
+          countdownElement.textContent = `Осталось: ${timeLeft} секунд`;
+        } else {
+          clearInterval(countdownTimer);
+          countdownElement.textContent = "создатель @YHOR4EK❤️";
+          // Здесь можно добавить конечные действия или усилить глич-эффекты
+        }
+      }, 1000);
+    });
+
+    // Случайный сдвиг и поворот контейнера для эффекта «тряски»
+    setInterval(() => {
+      const randomX = Math.floor(Math.random() * 10 - 5);
+      const randomY = Math.floor(Math.random() * 10 - 5);
+      const randomRot = Math.floor(Math.random() * 4 - 2);
+      container.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRot}deg)`;
+    }, 200);
+
+    // Случайное мерцание фона для дополнительной нестабильности
+    setInterval(() => {
+      document.body.style.background = Math.random() > 0.5 ? 'black' : '#200000';
+    }, 500);
+  </script>
+</body>
+</html>
